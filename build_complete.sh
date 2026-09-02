@@ -185,20 +185,20 @@ download_shim() {
   print_info "downloading shim file chunks (total $zip_size_pretty across $chunk_count chunks)"
   mkdir -p "$shim_dir"
 
-  # Create a function to download a single chunk
+  # Helper function to download a single chunk
   download_chunk() {
     local shim_chunk="$1"
     local chunk_url="https://cdn.cros.download/$shim_url_dir/$shim_chunk"
     local chunk_path="$shim_dir/$shim_chunk"
-    
+
+    # Skip if chunk already exists and has the correct size
     if [ -f "$chunk_path" ]; then
       local existing_size="$(du -b "$chunk_path" | cut -f1)"
       if [ "$existing_size" = "$chunk_size" ]; then
-        echo "chunk $shim_chunk already complete, skipping"
         return 0
       fi
     fi
-    
+
     if [ ! "$quiet" ]; then
       wget -c -q --show-progress "$chunk_url" -O "$chunk_path"
     else
@@ -208,10 +208,10 @@ download_shim() {
   export -f download_chunk
   export shim_url_dir shim_dir chunk_size quiet
 
-  # Download chunks in parallel (4 at a time by default)
-  echo "$shim_chunks" | xargs -P "${PARALLEL_DOWNLOADS:-16}" -I {} bash -c 'download_chunk "$@"' _ {}
-  
-  # Check if all chunks were downloaded successfully
+  # Download chunks in parallel (16 at a time)
+  echo "$shim_chunks" | xargs -P 16 -I {} bash -c 'download_chunk "$@"' _ {}
+
+  # Verify all chunks are present and complete
   local missing_chunks=0
   for shim_chunk in $shim_chunks; do
     local chunk_path="$shim_dir/$shim_chunk"
@@ -220,19 +220,18 @@ download_shim() {
       missing_chunks=$((missing_chunks + 1))
     else
       local existing_size="$(du -b "$chunk_path" | cut -f1)"
-      if [ "$existing_size" != "$chunk_size" ]; then
+      # The last chunk may be smaller than the full chunk size
+      if [ "$existing_size" != "$chunk_size" ] && [ "$shim_chunk" != "$(echo "$shim_chunks" | tail -n1)" ]; then
         print_error "incomplete chunk: $shim_chunk (size: $existing_size, expected: $chunk_size)"
         missing_chunks=$((missing_chunks + 1))
       fi
     fi
   done
-  
+
   if [ $missing_chunks -gt 0 ]; then
+    print_error "failed to download all shim chunks"
     return 1
   fi
-  
-  print_info "all chunks downloaded successfully"
-}
 
   print_info "joining shim file chunks"
   cleanup_path="$shim_zip"
