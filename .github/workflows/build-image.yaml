@@ -21,22 +21,31 @@ jobs:
       - name: Maximize build space
         uses: easimon/maximize-build-space@master
         with:
-          root-reserve-mb: 4096
+          root-reserve-mb: 8192
           swap-size-mb: 1024
           remove-dotnet: 'true'
           remove-android: 'true'
           remove-haskell: 'true'
-          remove-docker-images : 'true'
-          remove-codeql : 'true'
+          remove-docker-images: 'true'
+          remove-codeql: 'true'
 
       - name: download repo
         uses: actions/checkout@v4
-      
+
+      - name: Prepare larger /tmp
+        run: |
+          mkdir -p "$GITHUB_WORKSPACE/large-tmp"
+          sudo mount --bind "$GITHUB_WORKSPACE/large-tmp" /tmp
+          sudo chmod 1777 /tmp
+          df -h /tmp
+
       - name: run build
+        env:
+          TMPDIR: ${{ github.workspace }}/large-tmp
         run: |
           sudo apt-get update
-          sudo apt-get upgrade -y
-          sudo DEBUG=1 ./build_complete.sh ${{ matrix.board }} compress_img=1 quiet=1
+          # No apt-get upgrade needed – the build script installs required dependencies itself
+          sudo TMPDIR="$TMPDIR" DEBUG=1 ./build_complete.sh ${{ matrix.board }} compress_img=1 quiet=1
 
       - name: upload img
         uses: actions/upload-artifact@v4
