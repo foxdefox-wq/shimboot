@@ -184,24 +184,55 @@ download_shim() {
 
   print_info "downloading shim file chunks (total $zip_size_pretty across $chunk_count chunks)"
   mkdir -p "$shim_dir"
-  local i="0"
-  for shim_chunk in $shim_chunks; do
+
+  # Create a function to download a single chunk
+  download_chunk() {
+    local shim_chunk="$1"
     local chunk_url="https://cdn.cros.download/$shim_url_dir/$shim_chunk"
     local chunk_path="$shim_dir/$shim_chunk"
-    local i="$(($i + 1))"
+    
     if [ -f "$chunk_path" ]; then
       local existing_size="$(du -b "$chunk_path" | cut -f1)"
       if [ "$existing_size" = "$chunk_size" ]; then
-        continue
+        echo "chunk $shim_chunk already complete, skipping"
+        return 0
       fi
     fi
-    print_info "downloading chunk $i / $chunk_count"
+    
     if [ ! "$quiet" ]; then
       wget -c -q --show-progress "$chunk_url" -O "$chunk_path"
     else
       wget -c -q "$chunk_url" -O "$chunk_path"
     fi
+  }
+  export -f download_chunk
+  export shim_url_dir shim_dir chunk_size quiet
+
+  # Download chunks in parallel (4 at a time by default)
+  echo "$shim_chunks" | xargs -P "${PARALLEL_DOWNLOADS:-16}" -I {} bash -c 'download_chunk "$@"' _ {}
+  
+  # Check if all chunks were downloaded successfully
+  local missing_chunks=0
+  for shim_chunk in $shim_chunks; do
+    local chunk_path="$shim_dir/$shim_chunk"
+    if [ ! -f "$chunk_path" ]; then
+      print_error "missing chunk: $shim_chunk"
+      missing_chunks=$((missing_chunks + 1))
+    else
+      local existing_size="$(du -b "$chunk_path" | cut -f1)"
+      if [ "$existing_size" != "$chunk_size" ]; then
+        print_error "incomplete chunk: $shim_chunk (size: $existing_size, expected: $chunk_size)"
+        missing_chunks=$((missing_chunks + 1))
+      fi
+    fi
   done
+  
+  if [ $missing_chunks -gt 0 ]; then
+    return 1
+  fi
+  
+  print_info "all chunks downloaded successfully"
+}
 
   print_info "joining shim file chunks"
   cleanup_path="$shim_zip"
