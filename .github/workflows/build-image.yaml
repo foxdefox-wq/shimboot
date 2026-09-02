@@ -40,12 +40,10 @@ jobs:
           df -h /tmp
 
       - name: run build
-        env:
-          TMPDIR: ${{ github.workspace }}/large-tmp
         run: |
           sudo apt-get update
           # No apt-get upgrade needed – the build script installs required dependencies itself
-          sudo TMPDIR="$TMPDIR" DEBUG=1 ./build_complete.sh ${{ matrix.board }} compress_img=1 quiet=1
+          sudo DEBUG=1 ./build_complete.sh ${{ matrix.board }} compress_img=1 quiet=1
 
       - name: upload img
         uses: actions/upload-artifact@v4
