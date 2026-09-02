@@ -2,7 +2,6 @@ name: build-image
 run-name: Build the shimboot disk image for all boards
 on: [push]
 
-
 jobs:
   build:
     permissions:
@@ -22,20 +21,25 @@ jobs:
       - name: Maximize build space
         uses: easimon/maximize-build-space@master
         with:
-          root-reserve-mb: 4096
+          root-reserve-mb: 8192          # Increased from 4096 to give more headroom
           swap-size-mb: 1024
           remove-dotnet: 'true'
           remove-android: 'true'
           remove-haskell: 'true'
+          remove-codeql: 'true'           # Also remove CodeQL if present
+          remove-docker-images: 'true'   # Clean docker images to free space
 
       - name: download repo
         uses: actions/checkout@v4
       
       - name: run build
+        env:
+          TMPDIR: ${{ github.workspace }}/tmp   # Use workspace for temp files
         run: |
+          mkdir -p "$TMPDIR"
           sudo apt-get update
-          sudo apt-get upgrade -y
-          sudo DEBUG=1 ./build_complete.sh ${{ matrix.board }} compress_img=1 quiet=1
+          # No apt-get upgrade needed – the build script installs required dependencies itself
+          sudo TMPDIR="$TMPDIR" DEBUG=1 ./build_complete.sh ${{ matrix.board }} compress_img=1 quiet=1
 
       - name: upload img
         uses: actions/upload-artifact@v4
