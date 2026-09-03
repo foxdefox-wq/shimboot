@@ -43,7 +43,7 @@ jobs:
         run: |
           sudo apt-get update
           # No apt-get upgrade needed – the build script installs required dependencies itself
-          sudo DEBUG=1 ./build_complete.sh ${{ matrix.board }} release=trixie desktop=lxqt compress_img=1 quiet=1
+          sudo DEBUG=1 ./build_complete.sh ${{ matrix.board }} release=trixie desktop=gnome compress_img=1 quiet=1
 
       - name: upload img
         uses: actions/upload-artifact@v4
