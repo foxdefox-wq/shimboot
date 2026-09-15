@@ -9,7 +9,7 @@ jobs:
 
     strategy: 
       matrix:
-        board: [octupus]
+        board: [octopus]
 
     runs-on: ubuntu-latest
     steps:
