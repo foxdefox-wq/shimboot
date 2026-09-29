@@ -8,6 +8,10 @@ if [ -f "/bootloader/opt/.shimboot_version" ]; then
   fi
 fi
 
+if [ ! -s "/.who" ]; then
+  echo "who file is empty, please add a name"
+fi
+
 #get storage stats
 percent_full="$(df -BM / | tail -n1 | awk '{print $5}' | tr -d '%')"
 total_size="$(df -BM / | tail -n1 | awk '{print $2}' | tr -d 'M')"
