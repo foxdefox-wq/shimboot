@@ -34,6 +34,7 @@ arch="${args['arch']-amd64}"
 release="${args['release']}"
 distro="${args['distro']-debian}"
 luks="${args['luks']}"
+who="${args['who']}"
 
 #a list of all arm board names
 arm_boards="
@@ -305,7 +306,8 @@ if [ ! "$rootfs_dir" ]; then
     username=user \
     user_passwd=user \
     arch=$arch \
-    distro=$distro
+    distro=$distro \
+    who=$who
 fi
 
 print_title "patching $distro rootfs"
