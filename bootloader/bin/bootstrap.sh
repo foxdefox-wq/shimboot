@@ -101,16 +101,6 @@ print_license() {
     local suffix="-dev-$git_hash"
   fi
   cat << EOF 
-Shimboot ${shimboot_version}${suffix}
-
-ading2210/shimboot: Boot desktop Linux from a Chrome OS RMA shim.
-Copyright (C) 2025 ading2210
-
-This program is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
 This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
@@ -125,10 +115,6 @@ print_selector() {
   local rootfs_partitions="$1"
   local i=1
 
-  echo "┌──────────────────────┐"
-  echo "│ Shimboot OS Selector │"
-  echo "└──────────────────────┘"
-
   if [ "${rootfs_partitions}" ]; then
     for rootfs_partition in $rootfs_partitions; do
       #i don't know of a better way to split a string in the busybox shell
@@ -138,7 +124,7 @@ print_selector() {
       i=$((i+1))
     done
   else
-    echo "no bootable partitions found. please see the shimboot documentation to mark a partition as bootable."
+    echo "no bootable partitions found."
   fi
 
   echo "q) reboot"
@@ -387,7 +373,7 @@ boot_chromeos() {
 }
 
 main() {
-  echo "starting the shimboot bootloader"
+  echo "starting the bootloader"
 
   enable_debug_console "$TTY2"
 
