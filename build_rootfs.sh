@@ -28,6 +28,7 @@ rootfs_dir=$(realpath -m "${1}")
 release_name="${2}"
 packages="${args['custom_packages']-task-xfce-desktop}"
 arch="${args['arch']-amd64}"
+who="${args['who']}"
 distro="${args['distro']-debian}"
 chroot_mounts="proc sys dev run"
 
