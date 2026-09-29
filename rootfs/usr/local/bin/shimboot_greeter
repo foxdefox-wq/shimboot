@@ -8,7 +8,8 @@ if [ -f "/bootloader/opt/.shimboot_version" ]; then
   fi
 fi
 
-if [ ! -s "/.who" ]; then
+who_value=$(cat "/.who")
+if [ "$who_value" = "nobody" ]; then
   echo "who file is empty, please add a name"
 fi
 
