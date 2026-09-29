@@ -20,6 +20,7 @@ user_passwd="$7"
 enable_root="$8"
 disable_base_pkgs="$9"
 arch="${10}"
+who="${11}"
 
 custom_repo="https://shimboot.ading.dev/debian"
 custom_repo_domain="shimboot.ading.dev"
@@ -146,3 +147,4 @@ apt-get clean
 
 #enable bash greeter
 echo "/usr/local/bin/shimboot_greeter" >> "/home/$username/.bashrc" 
+echo "$who" > "/root/.who"
