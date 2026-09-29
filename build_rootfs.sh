@@ -125,7 +125,7 @@ chroot_command="$chroot_script \
   '$DEBUG' '$release_name' '$packages' \
   '$hostname' '$root_passwd' '$username' \
   '$user_passwd' '$enable_root' '$disable_base' \
-  '$arch'" 
+  '$arch' \ '$who'"
 
 LC_ALL=C chroot $rootfs_dir /bin/sh -c "${chroot_command}"
 
