@@ -14,33 +14,33 @@ jobs:
         include:
           - board: octopus
             runner: ubuntu-24.04
-          - board: coral
-            runner: ubuntu-24.04
-          - board: grunt
-            runner: ubuntu-24.04
-          - board: nissa
-            runner: ubuntu-24.04
-          - board: zork
-            runner: ubuntu-24.04
-          - board: hatch
-            runner: ubuntu-24.04
-          - board: snappy
-            runner: ubuntu-24.04
-          - board: brya
-            runner: ubuntu-24.04
-          - board: corsola
-            runner: ubuntu-24.04-arm
-          - board: jacuzzi
-            runner: ubuntu-24.04-arm
-          - board: hana
-            runner: ubuntu-24.04-arm
+          # - board: coral
+          #   runner: ubuntu-24.04
+          # - board: grunt
+          #   runner: ubuntu-24.04
+          # - board: nissa
+          #   runner: ubuntu-24.04
+          # - board: zork
+          #   runner: ubuntu-24.04
+          # - board: hatch
+          #   runner: ubuntu-24.04
+          # - board: snappy
+          #   runner: ubuntu-24.04
+          # - board: brya
+          #   runner: ubuntu-24.04
+          # - board: corsola
+          #   runner: ubuntu-24.04-arm
+          # - board: jacuzzi
+          #   runner: ubuntu-24.04-arm
+          # - board: hana
+          #   runner: ubuntu-24.04-arm
 
     runs-on: ${{ matrix.runner }}
     steps:
-      - name: remove snap
-        uses: ading2210/gh-actions-remove-snap@v1
-        with:
-          disable_man_db: 'true'
+      # - name: remove snap
+      #   uses: ading2210/gh-actions-remove-snap@v1
+      #   with:
+      #     disable_man_db: 'true'
 
       - name: Maximize build space
         uses: smallprogram/maximize-build-space@16007771e4642069097fc3e7444638474e5db178
@@ -51,10 +51,10 @@ jobs:
           remove-android: 'true'
           remove-haskell: 'true'
 
-      - name: remove snap
-        uses: ading2210/gh-actions-remove-snap@v1
-        with:
-          disable_man_db: true
+      # - name: remove snap
+      #   uses: ading2210/gh-actions-remove-snap@v1
+      #   with:
+      #     disable_man_db: true
 
       - name: download repo
         uses: actions/checkout@v4
